@@ -1,0 +1,23 @@
+// div This is the todo view.
+
+h2 タスク一覧
+
+table.table
+  tr
+    th タスク
+    th 期限
+  tr(ng:repeat="todo in todoCtrl.todos")
+    td {{ todo.name }}
+    td {{ todo.due }}
+
+h2 タスク登録
+
+form
+  div
+    label(for="name") タスク：
+    input#name(type="text" size="25" ng-model="todoCtrl.todo.name")
+  div
+    label(for="due") 期限：
+    input#due(type="text" size="60" ng-model="todoCtrl.todo.due")
+  div
+    button(ng-click="todoCtrl.oninsert()") 登録

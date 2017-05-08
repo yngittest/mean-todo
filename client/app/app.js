@@ -26,11 +26,13 @@ import constants from './app.constants';
 import util from '../components/util/util.module';
 import socket from '../components/socket/socket.service';
 
+import TodoComponent from './todo/todo.component';
+
 import './app.css';
 
 angular.module('meantodoApp', [ngCookies, ngResource, ngSanitize, 'btford.socket-io', uiRouter,
   uiBootstrap, _Auth, account, admin, 'validation.match', navbar, footer, main, constants,
-  socket, util
+  socket, util, TodoComponent
 ])
   .config(routeConfig)
   .run(function($rootScope, $location, Auth) {
