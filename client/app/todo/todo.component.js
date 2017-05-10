@@ -7,27 +7,50 @@ import routes from './todo.routes';
 
 export class TodoComponent {
   /*@ngInject*/
-  constructor($resource) {
-    this.Todo = $resource(
-      '/api/todos/:_id',
-      { _id: '@_id'},
-      { update: { method:   'PUT' } }
-    );
-    this.todos = this.Todo.query();
+  constructor($http, socket) {
+    this.$http = $http;
+    this.socket = socket;
   }
 
-  oninsert() {
-    this.Todo.save(
-      this.todo,
-      function() {
-        this.todos = this.Todo.query();
-        this.todo = {};
-      }
-    );
+  $onInit() {
+    this.showList();
   }
+
+  showList() {
+    this.$http.get('/api/todos')
+      .then(response => {
+        this.todos = response.data;
+        this.socket.syncUpdates('todo', this.todos);
+      });
+  }
+
+  addTodo() {
+    if(this.todo) {
+      this.$http.post('/api/todos', this.todo);
+      this.todo = {};
+    }
+  }
+
+  updateTodo() {
+    if(this.todo) {
+      this.$http.put(`/api/todos/${this.todo._id}`, this.todo);
+      this.todo = {};
+      this.showList();
+    }
+  }
+
+  editTodo(_id) {
+    this.$http.get(`/api/todos/${_id}`)
+      .then(response => {
+        this.todo = response.data;
+      });
+  }
+
+  deleteTodo(_id) {
+    this.$http.delete(`/api/todos/${_id}`);
+  }
+
 }
-
-TodoComponent.$inject = ['$resource'];
 
 export default angular.module('meantodoApp.todo', [uiRouter])
   .config(routes)
