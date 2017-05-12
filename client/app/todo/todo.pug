@@ -9,7 +9,6 @@ form
     input#due(type="text" ng-model="todoCtrl.todo.due")
   div
     button.btn(ng-click="todoCtrl.addTodo()") 登録
-    button.btn(ng-click="todoCtrl.updateTodo()") 更新
 
 h2 タスク一覧
 
@@ -17,10 +16,12 @@ table.table
   tr
     th タスク
     th 期限
-    th 
+    th
   tr(ng:repeat="todo in todoCtrl.todos")
-    td {{ todo.name }}
-    td {{ todo.due }}
     td
-      button.btn(ng-click="todoCtrl.editTodo(todo._id)") 編集
-      button.btn(ng-click="todoCtrl.deleteTodo(todo._id)") 削除
+      a(href="#" editable-text="todo.name") {{ todo.name || 'empty' }}
+    td
+      a(href="#" editable-text="todo.due") {{ todo.due || 'empty' }}
+    td
+      button.btn(ng-click="todoCtrl.updateTodo(todo)") 更新
+      button.btn(ng-click="todoCtrl.deleteTodo(todo)") 削除

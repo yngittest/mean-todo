@@ -2,6 +2,7 @@
 const angular = require('angular');
 
 const uiRouter = require('angular-ui-router');
+const xeditable = require('angular-xeditable');
 
 import routes from './todo.routes';
 
@@ -31,28 +32,32 @@ export class TodoComponent {
     }
   }
 
-  updateTodo() {
-    if(this.todo) {
-      this.$http.put(`/api/todos/${this.todo._id}`, this.todo);
-      this.todo = {};
-      this.showList();
-    }
+  // updateTodo() {
+  //   if(this.todo) {
+  //     this.$http.put(`/api/todos/${this.todo._id}`, this.todo);
+  //     this.todo = {};
+  //     this.showList();
+  //   }
+  // }
+  //
+  // editTodo(_id) {
+  //   this.$http.get(`/api/todos/${_id}`)
+  //     .then(response => {
+  //       this.todo = response.data;
+  //     });
+  // }
+  updateTodo(todo) {
+    this.$http.put(`/api/todos/${todo._id}`, todo);
+    this.showList();
   }
 
-  editTodo(_id) {
-    this.$http.get(`/api/todos/${_id}`)
-      .then(response => {
-        this.todo = response.data;
-      });
-  }
-
-  deleteTodo(_id) {
-    this.$http.delete(`/api/todos/${_id}`);
+  deleteTodo(todo) {
+    this.$http.delete(`/api/todos/${todo._id}`);
   }
 
 }
 
-export default angular.module('meantodoApp.todo', [uiRouter])
+export default angular.module('meantodoApp.todo', [uiRouter, 'xeditable'])
   .config(routes)
   .component('todo', {
     template: require('./todo.pug'),
