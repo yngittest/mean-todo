@@ -11,6 +11,7 @@ export class TodoComponent {
   constructor($http, socket) {
     this.$http = $http;
     this.socket = socket;
+    this.doneFilter = false;
   }
 
   $onInit() {
@@ -27,25 +28,12 @@ export class TodoComponent {
 
   addTodo() {
     if(this.todo) {
+      this.todo.done = false;
       this.$http.post('/api/todos', this.todo);
       this.todo = {};
     }
   }
 
-  // updateTodo() {
-  //   if(this.todo) {
-  //     this.$http.put(`/api/todos/${this.todo._id}`, this.todo);
-  //     this.todo = {};
-  //     this.showList();
-  //   }
-  // }
-  //
-  // editTodo(_id) {
-  //   this.$http.get(`/api/todos/${_id}`)
-  //     .then(response => {
-  //       this.todo = response.data;
-  //     });
-  // }
   updateTodo(todo) {
     this.$http.put(`/api/todos/${todo._id}`, todo);
     this.showList();
@@ -53,6 +41,10 @@ export class TodoComponent {
 
   deleteTodo(todo) {
     this.$http.delete(`/api/todos/${todo._id}`);
+  }
+
+  switchDoneFilter(flag) {
+    this.doneFilter = flag;
   }
 
 }
@@ -63,5 +55,8 @@ export default angular.module('meantodoApp.todo', [uiRouter, 'xeditable'])
     template: require('./todo.pug'),
     controller: TodoComponent,
     controllerAs: 'todoCtrl'
+  })
+  .run(function(editableOptions) {
+    editableOptions.theme = 'bs3';
   })
   .name;

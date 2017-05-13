@@ -8,20 +8,26 @@ form
     label(for="due") 期限：
     input#due(type="text" ng-model="todoCtrl.todo.due")
   div
-    button.btn(ng-click="todoCtrl.addTodo()") 登録
+    button.btn.btn-default(ng-click="todoCtrl.addTodo()") 登録
 
 h2 タスク一覧
 
-table.table
+table.table.table-hover
   tr
+    th
     th タスク
     th 期限
     th
-  tr(ng:repeat="todo in todoCtrl.todos")
+  tr(ng:repeat="todo in todoCtrl.todos | filter:{done:todoCtrl.doneFilter} ")
+    td
+      input(type="checkbox" ng-model="todo.done")
     td
       a(href="#" editable-text="todo.name") {{ todo.name || 'empty' }}
     td
       a(href="#" editable-text="todo.due") {{ todo.due || 'empty' }}
     td
-      button.btn(ng-click="todoCtrl.updateTodo(todo)") 更新
-      button.btn(ng-click="todoCtrl.deleteTodo(todo)") 削除
+      button.btn.btn-default(ng-click="todoCtrl.updateTodo(todo)") 更新
+      button.btn.btn-danger(ng-click="todoCtrl.deleteTodo(todo)") 削除
+
+button.btn(ng-click="todoCtrl.switchDoneFilter(none)") 完了タスクを表示
+button.btn(ng-click="todoCtrl.switchDoneFilter(false)") 完了タスクを非表示
