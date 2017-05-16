@@ -8,26 +8,30 @@ form
     label(for="due") 期限：
     input#due(type="text" ng-model="todoCtrl.todo.due")
   div
-    button.btn.btn-default(ng-click="todoCtrl.addTodo()") 登録
+    button.btn.btn-primary(ng-click="todoCtrl.addTodo()") 登録
 
 h2 タスク一覧
+
+div(data-toggle="buttons")
+  label.btn.btn-default(ng-class="{active:todoCtrl.showDone}")
+    input(type="checkbox" ng-model="todoCtrl.showDone" ng-change="todoCtrl.switchDoneFilter()")
+    | 完了タスクを表示
 
 table.table.table-hover
   tr
     th
-    th タスク
-    th 期限
+    th(ng-click="name=!name; todoCtrl.sort('name', name)") タスク
+    th(ng-click="due=!due; todoCtrl.sort('due', due)") 期限
+    th(ng-click="done_date=!done_date; todoCtrl.sort('done_date', done_date)") 完了日時
     th
-  tr(ng:repeat="todo in todoCtrl.todos | filter:{done:todoCtrl.doneFilter} ")
+  tr(ng-repeat="todo in todoCtrl.todos | filter:{done:todoCtrl.doneFilter} ")
     td
-      input(type="checkbox" ng-model="todo.done")
+      input(type="checkbox" ng-model="todo.done" ng-change="todoCtrl.updateTodo(todo)")
     td
       a(href="#" editable-text="todo.name") {{ todo.name || 'empty' }}
     td
       a(href="#" editable-text="todo.due") {{ todo.due || 'empty' }}
+    td {{ todo.done_date }}
     td
       button.btn.btn-default(ng-click="todoCtrl.updateTodo(todo)") 更新
       button.btn.btn-danger(ng-click="todoCtrl.deleteTodo(todo)") 削除
-
-button.btn(ng-click="todoCtrl.switchDoneFilter(none)") 完了タスクを表示
-button.btn(ng-click="todoCtrl.switchDoneFilter(false)") 完了タスクを非表示

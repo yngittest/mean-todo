@@ -8,9 +8,12 @@ import routes from './todo.routes';
 
 export class TodoComponent {
   /*@ngInject*/
-  constructor($http, socket) {
+  constructor($http, socket, $filter) {
     this.$http = $http;
     this.socket = socket;
+    this.$filter = $filter;
+
+    this.showDone = false;
     this.doneFilter = false;
   }
 
@@ -35,6 +38,11 @@ export class TodoComponent {
   }
 
   updateTodo(todo) {
+    if (todo.done) {
+      todo.done_date = this.getDate();
+    } else {
+      todo.done_date = '';
+    }
     this.$http.put(`/api/todos/${todo._id}`, todo);
     this.showList();
   }
@@ -43,8 +51,26 @@ export class TodoComponent {
     this.$http.delete(`/api/todos/${todo._id}`);
   }
 
-  switchDoneFilter(flag) {
-    this.doneFilter = flag;
+  switchDoneFilter() {
+    if (this.showDone) {
+      this.doneFilter = undefined;
+    } else {
+      this.doneFilter = false;
+    }
+  }
+
+  getDate() {
+    let date = new Date();
+    return date.getFullYear() + "/" +
+           date.getMonth() + "/" +
+           date.getDate() + " " +
+           date.getHours() + ":" +
+           date.getMinutes() + ":" +
+           date.getSeconds()
+  }
+
+  sort(exp, reverse) {
+    this.todos = this.$filter('orderBy')(this.todos, exp, reverse);
   }
 
 }

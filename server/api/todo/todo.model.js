@@ -6,7 +6,8 @@ import {registerEvents} from './todo.events';
 var TodoSchema = new mongoose.Schema({
   done: Boolean,
   name: String,
-  due: String
+  due: String,
+  done_date: String
 });
 
 registerEvents(TodoSchema);
