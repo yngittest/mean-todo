@@ -4,6 +4,8 @@ const angular = require('angular');
 const uiRouter = require('angular-ui-router');
 const xeditable = require('angular-xeditable');
 
+import datepicker from 'angular-ui-bootstrap/src/datepicker';
+
 import routes from './todo.routes';
 
 export class TodoComponent {
@@ -13,15 +15,19 @@ export class TodoComponent {
     this.socket = socket;
     this.$filter = $filter;
 
+    this.newTodo = {};
+    this.newTodo.due = new Date();
+    this.datePickerOpen = {};
+
     this.showDone = false;
     this.doneFilter = false;
   }
 
   $onInit() {
-    this.showList();
+    this.getTodos();
   }
 
-  showList() {
+  getTodos() {
     this.$http.get('/api/todos')
       .then(response => {
         this.todos = response.data;
@@ -30,43 +36,39 @@ export class TodoComponent {
   }
 
   addTodo() {
-    if(this.todo) {
-      this.todo.done = false;
-      this.$http.post('/api/todos', this.todo);
-      this.todo = {};
+    if(this.newTodo) {
+      this.newTodo.done = false;
+      this.$http.post('/api/todos', this.newTodo);
+      this.newTodo = {};
+      this.newTodo.due = new Date();
     }
   }
 
   updateTodo(todo) {
     if (todo.done) {
-      todo.done_date = this.getDate();
+      todo.doneDate = new Date();
     } else {
-      todo.done_date = '';
+      todo.doneDate = '';
     }
     this.$http.put(`/api/todos/${todo._id}`, todo);
-    this.showList();
+    this.getTodos();
   }
 
   deleteTodo(todo) {
     this.$http.delete(`/api/todos/${todo._id}`);
   }
 
-  switchDoneFilter() {
+  toggleDatePicker($event, target) {
+    $event.stopPropagation();
+    this.datePickerOpen[target] = !this.datePickerOpen[target];
+  }
+
+  toggleDoneFilter() {
     if (this.showDone) {
       this.doneFilter = undefined;
     } else {
       this.doneFilter = false;
     }
-  }
-
-  getDate() {
-    let date = new Date();
-    return date.getFullYear() + "/" +
-           date.getMonth() + "/" +
-           date.getDate() + " " +
-           date.getHours() + ":" +
-           date.getMinutes() + ":" +
-           date.getSeconds()
   }
 
   sort(exp, reverse) {

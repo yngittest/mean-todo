@@ -7,7 +7,7 @@ var TodoSchema = new mongoose.Schema({
   done: Boolean,
   name: String,
   due: String,
-  done_date: String
+  doneDate: String
 });
 
 registerEvents(TodoSchema);
