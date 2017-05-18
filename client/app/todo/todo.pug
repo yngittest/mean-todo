@@ -1,39 +1,42 @@
-h2 タスク登録
+.container
+  .form-horizontal
+    .form-group
+      label.control-label.col-xs-2(for="name") タスク：
+      .col-xs-8
+        input#name.form-control(type="text" ng-model="todoCtrl.newTodo.name")
+    .form-group
+      label.control-label.col-xs-2(for="due") 期限：
+      .col-xs-4
+        button#due.btn.btn-default(type="text" uib-datepicker-popup is-open="todoCtrl.datePickerOpen['add']" ng-click="todoCtrl.toggleDatePicker($event, 'add')" ng-model="todoCtrl.newTodo.due") {{todoCtrl.newTodo.due | date : 'yyyy/MM/dd'}}
+      .col-xs-4
+        div(uib-timepicker ng-model="todoCtrl.newTodo.due" show-meridian=true)
+    .form-group
+      .col-xs-offset-2.col-xs-2
+        button.btn.btn-primary(ng-click="todoCtrl.addTodo()") 登録
 
-form
-  div
-    label(for="name") タスク：
-    input#name(type="text" ng-model="todoCtrl.newTodo.name")
-  div
-    label(for="due") 期限：
-    div
-      button#due.btn.btn-default(type="text" uib-datepicker-popup is-open="todoCtrl.datePickerOpen['add']" ng-click="todoCtrl.toggleDatePicker($event, 'add')" ng-model="todoCtrl.newTodo.due") {{todoCtrl.newTodo.due | date : 'yyyy/MM/dd'}}
-      div(uib-timepicker ng-model="todoCtrl.newTodo.due" show-meridian=true)
-  div
-    button.btn.btn-primary(ng-click="todoCtrl.addTodo()") 登録
+hr
 
-h2 タスク一覧
+.container
+  div(data-toggle="buttons")
+    label.btn.btn-default(ng-class="{active:todoCtrl.showDone}")
+      input(type="checkbox" ng-model="todoCtrl.showDone" ng-change="todoCtrl.toggleDoneFilter()")
+      | 完了タスクを表示
 
-div(data-toggle="buttons")
-  label.btn.btn-default(ng-class="{active:todoCtrl.showDone}")
-    input(type="checkbox" ng-model="todoCtrl.showDone" ng-change="todoCtrl.toggleDoneFilter()")
-    | 完了タスクを表示
-
-table.table.table-hover
-  tr
-    th
-    th(ng-click="name=!name; todoCtrl.sort('name', name)") タスク
-    th(ng-click="due=!due; todoCtrl.sort('due', due)") 期限
-    th(ng-click="doneDate=!doneDate; todoCtrl.sort('doneDate', doneDate)") 完了日時
-    th
-  tr(ng-repeat="todo in todoCtrl.todos | filter:{done:todoCtrl.doneFilter} ")
-    td
-      input(type="checkbox" ng-model="todo.done" ng-change="todoCtrl.updateTodo(todo)")
-    td
-      a(href="#" editable-text="todo.name" onaftersave="todoCtrl.updateTodo(todo)") {{ todo.name || 'empty' }}
-    td
-      a(href="#" editable-bsdate="todo.due" e-is-open="todoCtrl.datePickerOpen['edit']" e-ng-click="todoCtrl.toggleDatePicker($event, 'edit')" e-datepicker-popup="yyyy/MM/dd" onaftersave="todoCtrl.updateTodo(todo)") {{ (todo.due | date : 'yyyy/MM/dd ') || 'empty' }}
-      a(href="#" editable-bstime="todo.due" e-show-meridian="false" onaftersave="todoCtrl.updateTodo(todo)") {{ (todo.due | date : 'HH:mm') || 'empty' }}
-    td {{ todo.doneDate | date : 'yyyy/MM/dd HH:mm' }}
-    td
-      button.btn.btn-danger.glyphicon.glyphicon-trash(ng-click="todoCtrl.deleteTodo(todo)")
+  table.table.table-hover
+    tr
+      th
+      th(ng-click="name=!name; todoCtrl.sortTodos('name', name)") タスク
+      th(ng-click="due=!due; todoCtrl.sortTodos('due', due)") 期限
+      th(ng-click="doneDate=!doneDate; todoCtrl.sortTodos('doneDate', doneDate)") 完了日時
+      th
+    tr(ng-repeat="todo in todoCtrl.todos | filter:{done:todoCtrl.doneFilter} ")
+      td
+        input(type="checkbox" ng-model="todo.done" ng-change="todoCtrl.updateTodo(todo)")
+      td
+        a(href="#" editable-text="todo.name" onaftersave="todoCtrl.updateTodo(todo)") {{ todo.name || 'empty' }}
+      td
+        a(href="#" editable-bsdate="todo.due" e-is-open="todoCtrl.datePickerOpen['edit']" e-ng-click="todoCtrl.toggleDatePicker($event, 'edit')" e-datepicker-popup="yyyy/MM/dd" onaftersave="todoCtrl.updateTodo(todo)") {{ (todo.due | date : 'yyyy/MM/dd ') || 'empty' }}
+        a(href="#" editable-bstime="todo.due" e-show-meridian="false" onaftersave="todoCtrl.updateTodo(todo)") {{ (todo.due | date : 'HH:mm') || 'empty' }}
+      td {{ todo.doneDate | date : 'yyyy/MM/dd HH:mm' }}
+      td
+        button.btn.btn-danger.glyphicon.glyphicon-trash(ng-click="todoCtrl.deleteTodo(todo)")

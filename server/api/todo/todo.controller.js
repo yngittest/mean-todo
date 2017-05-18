@@ -89,6 +89,10 @@ export function create(req, res) {
 
 // Upserts the given Todo in the DB at the specified ID
 export function upsert(req, res) {
+  if(req.body.done) {
+    // ifttt(req.body);
+    require('./ifttt').default(req.body);
+  }
   if(req.body._id) {
     Reflect.deleteProperty(req.body, '_id');
   }
@@ -117,3 +121,40 @@ export function destroy(req, res) {
     .then(removeEntity(res))
     .catch(handleError(res));
 }
+
+// import request from 'request';
+// function ifttt(todo) {
+//   const eventId = 'apitest';
+//   const myKey = 'Hit9xntpzaEP666KrHmiy';
+//   const url = `https://maker.ifttt.com/trigger/${eventId}/with/key/${myKey}`;
+//
+//   const headers = {
+//     'Content-Type': 'application/json'
+//   };
+//
+//   var options = {
+//     url: url,
+//     method: 'POST',
+//     headers: headers,
+//     json: true,
+//     form: { value1: todo.name, value2: dateToString(todo.doneDate) }
+//   };
+//
+//   request(options, function(error, response, body) {
+//     if(!error && response.statusCode == 200) {
+//       console.log(body);
+//     } else {
+//       console.log(`error: ${response.statusCode}`);
+//     }
+//   });
+// }
+//
+// function dateToString(datestring) {
+//   const date = new Date(datestring);
+//   return date.getFullYear() + '/'
+//         + date.getMonth() + '/'
+//         + date.getDate() + ' '
+//         + date.getHours() + ':'
+//         + date.getMinutes() + ':'
+//         + date.getSeconds();
+// }

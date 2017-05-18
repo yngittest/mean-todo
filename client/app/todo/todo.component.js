@@ -4,8 +4,6 @@ const angular = require('angular');
 const uiRouter = require('angular-ui-router');
 const xeditable = require('angular-xeditable');
 
-import datepicker from 'angular-ui-bootstrap/src/datepicker';
-
 import routes from './todo.routes';
 
 export class TodoComponent {
@@ -35,6 +33,10 @@ export class TodoComponent {
       });
   }
 
+  sortTodos(exp, reverse) {
+    this.todos = this.$filter('orderBy')(this.todos, exp, reverse);
+  }
+
   addTodo() {
     if(this.newTodo) {
       this.newTodo.done = false;
@@ -45,7 +47,7 @@ export class TodoComponent {
   }
 
   updateTodo(todo) {
-    if (todo.done) {
+    if(todo.done) {
       todo.doneDate = new Date();
     } else {
       todo.doneDate = '';
@@ -64,15 +66,11 @@ export class TodoComponent {
   }
 
   toggleDoneFilter() {
-    if (this.showDone) {
+    if(this.showDone) {
       this.doneFilter = undefined;
     } else {
       this.doneFilter = false;
     }
-  }
-
-  sort(exp, reverse) {
-    this.todos = this.$filter('orderBy')(this.todos, exp, reverse);
   }
 
 }
