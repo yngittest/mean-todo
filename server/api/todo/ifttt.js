@@ -4,7 +4,7 @@ import request from 'request';
 
 export default function(todo) {
   const eventId = 'apitest';
-  const myKey = '***';
+  const myKey = todo.iftttKey;
   const url = `https://maker.ifttt.com/trigger/${eventId}/with/key/${myKey}`;
 
   const headers = {
