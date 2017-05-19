@@ -10,9 +10,9 @@
         input#name.form-control(type="text" ng-model="todoCtrl.newTodo.name")
     .form-group
       label.control-label.col-xs-2(for="due") 期限：
-      .col-xs-4
+      .col-xs-2
         button#due.btn.btn-default(type="text" uib-datepicker-popup is-open="todoCtrl.datePickerOpen['add']" ng-click="todoCtrl.toggleDatePicker($event, 'add')" ng-model="todoCtrl.newTodo.due") {{todoCtrl.newTodo.due | date : 'yyyy/MM/dd'}}
-      .col-xs-4
+      .col-xs-2
         div(uib-timepicker ng-model="todoCtrl.newTodo.due" show-meridian=true)
     .form-group
       .col-xs-offset-2.col-xs-2
