@@ -12,9 +12,9 @@ export default function(todo) {
   };
 
   var options = {
-    url: url,
+    url,
     method: 'POST',
-    headers: headers,
+    headers,
     json: true,
     form: { value1: todo.name, value2: dateToString(todo.doneDate) }
   };
