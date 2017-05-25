@@ -8,7 +8,20 @@ var TodoSchema = new mongoose.Schema({
   name: String,
   due: String,
   doneDate: String,
-  iftttKey: String
+  iftttKey: String,
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User'
+  }
+});
+
+TodoSchema.pre('find', function(next) {
+  this.populate('user', 'name');
+  next();
+});
+TodoSchema.pre('findById', function(next) {
+  this.populate('user', 'name');
+  next();
 });
 
 registerEvents(TodoSchema);
