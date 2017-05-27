@@ -112,6 +112,26 @@ export function AuthService($location, $http, $cookies, $q, appConfig, Util, Use
     },
 
     /**
+     * Change IFTTT Key
+     *
+     * @param  {String}   iftttKey
+     * @param  {Function} callback    - function(error, user)
+     * @return {Promise}
+     */
+    changeIftttKey(iftttKey, callback) {
+      return User.changeIftttKey({
+        id: currentUser._id
+      }, {
+        iftttKey
+      }, function() {
+        return safeCb(callback)(null);
+      }, function(err) {
+        return safeCb(callback)(err);
+      })
+        .$promise;
+    },
+
+    /**
      * Gets all available info on a user
      *
      * @param  {Function} [callback] - function(user)
@@ -220,6 +240,7 @@ export function AuthService($location, $http, $cookies, $q, appConfig, Util, Use
     getToken() {
       return $cookies.get('token');
     }
+
   };
 
   return Auth;

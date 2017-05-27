@@ -40,7 +40,6 @@ export class TodoComponent {
   addTodo() {
     if(this.newTodo) {
       this.newTodo.done = false;
-      this.newTodo.iftttKey = this.iftttKey;
       this.$http.post('/api/todos', this.newTodo);
       this.newTodo = {};
       this.newTodo.due = new Date();

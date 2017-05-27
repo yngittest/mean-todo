@@ -4,18 +4,24 @@ export default class SettingsController {
   user = {
     oldPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    iftttKey: ''
   };
   errors = {
     other: undefined
   };
   message = '';
   submitted = false;
+  iftttMessage = '';
 
 
   /*@ngInject*/
   constructor(Auth) {
     this.Auth = Auth;
+  }
+
+  $onInit() {
+    this.user.iftttKey = this.Auth.getCurrentUserSync().iftttKey;
   }
 
   changePassword(form) {
@@ -32,5 +38,14 @@ export default class SettingsController {
           this.message = '';
         });
     }
+  }
+  changeIftttKey() {
+    this.Auth.changeIftttKey(this.user.iftttKey)
+      .then(() => {
+        this.iftttMessage = 'IFTTT Key successfully changed.';
+      })
+      .catch(() => {
+        this.iftttMessage = '';
+      });
   }
 }

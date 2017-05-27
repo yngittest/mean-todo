@@ -91,7 +91,7 @@ export function create(req, res) {
 // Upserts the given Todo in the DB at the specified ID
 export function upsert(req, res) {
   if(req.body.done) {
-    require('./ifttt').default(req.body);
+    require('./ifttt').default(req);
   }
   if(req.body._id) {
     Reflect.deleteProperty(req.body, '_id');

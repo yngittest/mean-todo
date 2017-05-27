@@ -8,7 +8,6 @@ var TodoSchema = new mongoose.Schema({
   name: String,
   due: String,
   doneDate: String,
-  iftttKey: String,
   user: {
     type: mongoose.Schema.ObjectId,
     ref: 'User'

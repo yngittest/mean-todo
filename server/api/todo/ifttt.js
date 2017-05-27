@@ -2,9 +2,9 @@
 
 import request from 'request';
 
-export default function(todo) {
+export default function(req) {
   const eventId = 'apitest';
-  const myKey = todo.iftttKey;
+  const myKey = req.user.iftttKey;
   const url = `https://maker.ifttt.com/trigger/${eventId}/with/key/${myKey}`;
 
   const headers = {
@@ -16,7 +16,7 @@ export default function(todo) {
     method: 'POST',
     headers,
     json: true,
-    form: { value1: todo.name, value2: dateToString(todo.doneDate) }
+    form: { value1: req.body.name, value2: dateToString(req.body.doneDate) }
   };
 
   request(options, function(error, response, body) {

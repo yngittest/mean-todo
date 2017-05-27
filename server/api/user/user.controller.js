@@ -110,6 +110,7 @@ export function me(req, res, next) {
         return res.status(401).end();
       }
       res.json(user);
+      return null;
     })
     .catch(err => next(err));
 }
@@ -119,4 +120,23 @@ export function me(req, res, next) {
  */
 export function authCallback(req, res) {
   res.redirect('/');
+}
+
+/**
+ * Change a users IFTTT Key
+ */
+export function changeIftttKey(req, res) {
+  var userId = req.user._id;
+  var iftttKey = req.body.iftttKey;
+
+  return User.findById(userId).exec()
+    .then(user => {
+      user.iftttKey = iftttKey;
+      return user.save()
+        .then(() => {
+          res.status(204).end();
+          return null;
+        })
+        .catch(validationError(res));
+    });
 }

@@ -12,6 +12,12 @@ export function UserResource($resource) {
         controller: 'password'
       }
     },
+    changeIftttKey: {
+      method: 'PUT',
+      params: {
+        controller: 'ifttt'
+      }
+    },
     get: {
       method: 'GET',
       params: {
