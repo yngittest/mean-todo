@@ -10,7 +10,7 @@ export class NavbarComponent {
       state: 'main'
     }, {
       title: 'ToDo',
-      state: 'todo'      
+      state: 'todo'
     }
   ];
 
