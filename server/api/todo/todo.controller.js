@@ -13,6 +13,9 @@
 import jsonpatch from 'fast-json-patch';
 import Todo from './todo.model';
 
+import ifttt from '../../components/ifttt';
+const moment = require('moment');
+
 function respondWithResult(res, statusCode) {
   statusCode = statusCode || 200;
   return function(entity) {
@@ -67,7 +70,9 @@ function handleError(res, statusCode) {
 
 // Gets a list of Todos
 export function index(req, res) {
-  return Todo.find().exec()
+  return Todo.find()
+    .populate('user', 'name')
+    .exec()
     .then(respondWithResult(res))
     .catch(handleError(res));
 }
@@ -91,7 +96,14 @@ export function create(req, res) {
 // Upserts the given Todo in the DB at the specified ID
 export function upsert(req, res) {
   if(req.body.done) {
-    require('./ifttt').default(req);
+    const eventId = 'todoDone';
+    let key = req.user.iftttKey;
+    let value = [
+      req.body.name,
+      moment(req.body.doneDate).format("YYYY/MM/DD HH:mm"),
+      ''
+    ];
+    ifttt(eventId, key, value);
   }
   if(req.body._id) {
     Reflect.deleteProperty(req.body, '_id');

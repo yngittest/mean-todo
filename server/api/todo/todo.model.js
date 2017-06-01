@@ -14,14 +14,5 @@ var TodoSchema = new mongoose.Schema({
   }
 });
 
-TodoSchema.pre('find', function(next) {
-  this.populate('user', 'name');
-  next();
-});
-TodoSchema.pre('findById', function(next) {
-  this.populate('user', 'name');
-  next();
-});
-
 registerEvents(TodoSchema);
 export default mongoose.model('Todo', TodoSchema);
