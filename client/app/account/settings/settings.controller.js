@@ -21,7 +21,7 @@ export default class SettingsController {
   }
 
   $onInit() {
-    this.user.iftttKey = this.Auth.getCurrentUserSync().iftttKey;
+    this.user.iftttKey = this.Auth.getCurrentUser().iftttKey;
   }
 
   changePassword(form) {

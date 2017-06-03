@@ -7,7 +7,7 @@ var TodoSchema = new mongoose.Schema({
   done: Boolean,
   name: String,
   due: Date,
-  doneDate: String,
+  doneDate: Date,
   user: {
     type: mongoose.Schema.ObjectId,
     ref: 'User'

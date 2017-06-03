@@ -31,7 +31,7 @@ function sendNotifications(todos) {
     let key = todo.user.iftttKey;
     let value = [
       todo.name,
-      moment(todo.due).format("YYYY/MM/DD HH:mm"),
+      moment(todo.due).format('YYYY/MM/DD HH:mm'),
       ''
     ];
     ifttt(eventId, key, value);

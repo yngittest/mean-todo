@@ -100,7 +100,7 @@ export function upsert(req, res) {
     let key = req.user.iftttKey;
     let value = [
       req.body.name,
-      moment(req.body.doneDate).format("YYYY/MM/DD HH:mm"),
+      moment(req.body.doneDate).format('YYYY/MM/DD HH:mm'),
       ''
     ];
     ifttt(eventId, key, value);
