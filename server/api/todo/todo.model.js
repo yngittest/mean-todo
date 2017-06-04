@@ -6,6 +6,7 @@ import {registerEvents} from './todo.events';
 var TodoSchema = new mongoose.Schema({
   done: Boolean,
   name: String,
+  group: String,
   due: Date,
   doneDate: Date,
   user: {

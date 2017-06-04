@@ -3,6 +3,7 @@ const angular = require('angular');
 
 const uiRouter = require('angular-ui-router');
 const xeditable = require('angular-xeditable');
+const angularFilter = require('angular-filter');
 
 import routes from './todo.routes';
 
@@ -75,7 +76,7 @@ export class TodoComponent {
 
 }
 
-export default angular.module('meantodoApp.todo', [uiRouter, 'xeditable'])
+export default angular.module('meantodoApp.todo', [uiRouter, 'xeditable', angularFilter])
   .config(routes)
   .component('todo', {
     template: require('./todo.pug'),
