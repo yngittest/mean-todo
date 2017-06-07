@@ -29,7 +29,8 @@ export class TodoComponent {
   getTodos() {
     this.$http.get('/api/todos')
       .then(response => {
-        this.todos = response.data;
+        this.todos = response.data
+        this.getGroups();
         this.socket.syncUpdates('todo', this.todos);
       });
   }
@@ -44,6 +45,7 @@ export class TodoComponent {
       this.$http.post('/api/todos', this.newTodo);
       this.newTodo = {};
       this.newTodo.due = new Date();
+      this.getTodos();
     }
   }
 
@@ -59,6 +61,13 @@ export class TodoComponent {
 
   deleteTodo(todo) {
     this.$http.delete(`/api/todos/${todo._id}`);
+  }
+
+  getGroups() {
+    this.groups = [];
+    for (let todo of this.$filter('unique')(this.todos, 'group')) {
+      this.groups.push(todo.group);
+    }
   }
 
   toggleDatePicker($event, target) {
