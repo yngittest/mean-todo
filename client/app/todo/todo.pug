@@ -1,67 +1,81 @@
 .container
-  .panel.panel-default
-    .panel-heading ToDo
-    .panel-body
-      table.table.table-hover
-        thead
-          tr
-            th.col-xs-8 task
-            th.col-xs-2 group
-            th.col-xs-1 completed
-            th.col-xs-1 owner
-            th.col-xs-1
-        tbody
-          tr
-            td
-              .input-group
-                span.input-group-addon
-                input.form-control(type="text" ng-model="todoCtrl.newTodo.name")
-                span.input-group-btn
-                  button.btn.btn-default(href="#" editable-bsdate="todoCtrl.newTodo.due" e-is-open="todoCtrl.datePickerOpen['edit']" e-ng-click="todoCtrl.toggleDatePicker($event, 'edit')" e-datepicker-popup="yyyy/MM/dd") {{ (todoCtrl.newTodo.due | date : 'yyyy/MM/dd ') || 'empty' }}
-                  button.btn.btn-default(href="#" editable-bstime="todoCtrl.newTodo.due" e-show-meridian="false" ) {{ (todoCtrl.newTodo.due | date : 'HH:mm') || 'empty' }}
-            td
-              // select.form-control(ng-model="todoCtrl.newTodo.group" ng-options="todo.group for todo in todoCtrl.todos | unique:'group'")
-              .input-group
-                input.form-control(type="text" ng-model="todoCtrl.newTodo.group")
-                span.input-group-btn(uib-dropdown)
-                  button#single-button.btn.btn-default(type="button" uib-dropdown-toggle ng-disabled="disabled")
-                    span.caret
-                  ul.dropdown-menu(uib-dropdown-menu role="menu" aria-labelledby="single-button")
-                    div(ng-repeat="group in todoCtrl.groups")
-                      li(role="menuitem" ng-click="todoCtrl.newTodo.group = group") {{ group }}
-            td
-            td
-            td
-              button.btn.btn-primary.glyphicon.glyphicon-plus(ng-click="todoCtrl.addTodo()")
-        tbody(ng-repeat="(key, value) in todoCtrl.todos | groupBy: 'group'")
-          tr
-            td(colspan="5" ng-click="isCollapsed = !isCollapsed")
-              b {{ key }}
-          tr(uib-collapse="isCollapsed" ng-repeat="todo in value | filter:{done:todoCtrl.doneFilter}")
-            td
-              .input-group
-                span.input-group-addon
-                  input(type="checkbox" ng-model="todo.done" ng-change="todoCtrl.updateTodo(todo)")
-                a.form-control(href="#" editable-text="todo.name" onaftersave="todoCtrl.updateTodo(todo)") {{ todo.name || 'empty' }}
-                span.input-group-btn
-                  button.btn.btn-default(href="#" editable-bsdate="todo.due" e-is-open="todoCtrl.datePickerOpen['edit']" e-ng-click="todoCtrl.toggleDatePicker($event, 'edit')" e-datepicker-popup="yyyy/MM/dd" onaftersave="todoCtrl.updateTodo(todo)") {{ (todo.due | date : 'yyyy/MM/dd ') || 'empty' }}
-                  button.btn.btn-default(href="#" editable-bstime="todo.due" e-show-meridian="false" onaftersave="todoCtrl.updateTodo(todo)") {{ (todo.due | date : 'HH:mm') || 'empty' }}
-            td
-              .input-group
-                a.form-control(href="#" editable-text="todo.group" onaftersave="todoCtrl.updateTodo(todo)") {{ todo.group || 'empty' }}
-                span.input-group-btn(uib-dropdown)
-                  button.btn.btn-default(id="group{{ $index }}" type="button" uib-dropdown-toggle ng-disabled="disabled")
-                    span.caret
-                  ul.dropdown-menu(uib-dropdown-menu role="menu" aria-labelledby="group{{ $index }}")
-                    div(ng-repeat="group in todoCtrl.groups")
-                      li(role="menuitem" ng-click="todo.group = group; todoCtrl.updateTodo(todo)") {{ group }}
+  table.table.table-hover
+    thead
+      tr
+        th.col-xs-5 task
+        th.col-xs-2 due
+        th.col-xs-2 group
+        th.col-xs-1 completed
+        th.col-xs-1 owner
+        th.col-xs-1
+    tbody
+      tr
+        td
+          .input-group
+            span.input-group-addon
+            input.form-control(type="text" ng-model="todoCtrl.newTodo.name")
+        td
+          .input-group
+            span.input-group-btn
+              button.btn.btn-default(href="#" editable-bsdate="todoCtrl.newTodo.due" e-is-open="todoCtrl.datePickerOpen['edit']" e-ng-click="todoCtrl.toggleDatePicker($event, 'edit')" e-datepicker-popup="yyyy/MM/dd") {{ (todoCtrl.newTodo.due | date : 'yyyy/MM/dd ') || 'empty' }}
+              button.btn.btn-default(href="#" editable-bstime="todoCtrl.newTodo.due" e-show-meridian="false"  e-minute-step="5") {{ (todoCtrl.newTodo.due | date : 'HH:mm') || 'empty' }}
+              button.btn.btn-default.glyphicon.glyphicon-arrow-right(ng-click="todoCtrl.delayDue(todoCtrl.newTodo)")
+        td
+          .input-group
+            input.form-control(type="text" ng-model="todoCtrl.newTodo.group")
+            span.input-group-btn(uib-dropdown)
+              button#single-button.btn.btn-default(type="button" uib-dropdown-toggle ng-disabled="disabled")
+                span.caret
+              ul.dropdown-menu(uib-dropdown-menu role="menu" aria-labelledby="single-button")
+                div(ng-repeat="group in todoCtrl.groups")
+                  li(role="menuitem" ng-click="todoCtrl.newTodo.group = group") {{ group }}
+        td
+        td
+        td
+          button.btn.btn-primary.glyphicon.glyphicon-plus(ng-click="todoCtrl.addTodo()")
+    tbody(ng-repeat="(key, value) in todoCtrl.todos | groupBy: 'group'")
+      tr
+        td(colspan="5" ng-click="isCollapsed = !isCollapsed")
+          b {{ key }}
+      tr(uib-collapse="isCollapsed" ng-repeat="todo in value | filter:{done:todoCtrl.doneFilter}")
+        td
+          .input-group
+            span.input-group-addon
+              input(type="checkbox" ng-model="todo.done" ng-change="todoCtrl.updateTodo(todo)")
+            a.form-control(href="#" editable-text="todo.name" onaftersave="todoCtrl.updateTodo(todo)") {{ todo.name || 'empty' }}
+        td
+          .input-group
+            span.input-group-btn
+              button.btn.btn-default(href="#" editable-bsdate="todo.due" e-is-open="todoCtrl.datePickerOpen['edit']" e-ng-click="todoCtrl.toggleDatePicker($event, 'edit')" e-datepicker-popup="yyyy/MM/dd" onaftersave="todoCtrl.updateTodo(todo)") {{ (todo.due | date : 'yyyy/MM/dd ') || 'empty' }}
+              button.btn.btn-default(href="#" editable-bstime="todo.due" e-show-meridian="false" e-minute-step="5" onaftersave="todoCtrl.updateTodo(todo)") {{ (todo.due | date : 'HH:mm') || 'empty' }}
+              button.btn.btn-default.glyphicon.glyphicon-arrow-right(ng-click="todoCtrl.delayDue(todo)")
+        td
+          .input-group
+            a.form-control(href="#" editable-text="todo.group" onaftersave="todoCtrl.updateTodo(todo)") {{ todo.group || 'empty' }}
+            span.input-group-btn(uib-dropdown)
+              button.btn.btn-default(id="group{{ $index }}" type="button" uib-dropdown-toggle ng-disabled="disabled")
+                span.caret
+              ul.dropdown-menu(uib-dropdown-menu role="menu" aria-labelledby="group{{ $index }}")
+                div(ng-repeat="group in todoCtrl.groups")
+                  li(role="menuitem" ng-click="todo.group = group; todoCtrl.updateTodo(todo)") {{ group }}
 
-            td {{ todo.doneDate | date : 'yyyy/MM/dd HH:mm' }}
-            td {{ todo.user.name }}
-            td
-              button.btn.btn-danger.glyphicon.glyphicon-trash(ng-click="todoCtrl.deleteTodo(todo)")
+        td {{ todo.doneDate | date : 'yyyy/MM/dd HH:mm' }}
+        td {{ todo.user.name }}
+        td
+          button.btn.btn-danger.glyphicon.glyphicon-trash(ng-click="todoCtrl.deleteTodo(todo)")
 
-      div(data-toggle="buttons")
-        label.btn.btn-default(ng-class="{active:todoCtrl.showDone}")
-          input(type="checkbox" ng-model="todoCtrl.showDone" ng-change="todoCtrl.toggleDoneFilter()")
-          | show completed tasks
+  div(data-toggle="buttons")
+    label.btn.btn-default(ng-class="{active:todoCtrl.showDone}")
+      input(type="checkbox" ng-model="todoCtrl.showDone" ng-change="todoCtrl.toggleDoneFilter()")
+      | show completed tasks
+
+script(type="text/ng-template" id="repeatSetting.pug")
+  .modal-body#modal-body
+    p {{ modalCtrl.todo.due | date : 'yyyy/MM/dd HH:mm'}}
+    .btn-group
+      button.btn.btn-default(ng-click="modalCtrl.addMinutes(10)") + 10 min
+      button.btn.btn-default(ng-click="modalCtrl.addHours(1)") + 1 hour
+      button.btn.btn-default(ng-click="modalCtrl.addDays(1)") + 1 day
+  .modal-footer
+      button.btn.btn-primary(ng-click="modalCtrl.ok()") OK
+      button.btn.btn-warning(ng-click="modalCtrl.cancel()") Cancel

@@ -3,19 +3,21 @@ const angular = require('angular');
 
 const uiRouter = require('angular-ui-router');
 const xeditable = require('angular-xeditable');
-const angularFilter = require('angular-filter');
+const filter = require('angular-filter');
 
 import routes from './todo.routes';
 
 export class TodoComponent {
   /*@ngInject*/
-  constructor($http, socket, $filter) {
+  constructor($http, socket, $filter, $uibModal) {
     this.$http = $http;
     this.socket = socket;
     this.$filter = $filter;
+    this.$uibModal = $uibModal;
 
     this.newTodo = {};
-    this.newTodo.due = new Date();
+    this.newTodo.due = this.initializeDate();
+
     this.datePickerOpen = {};
 
     this.showDone = false;
@@ -44,7 +46,7 @@ export class TodoComponent {
       this.newTodo.done = false;
       this.$http.post('/api/todos', this.newTodo);
       this.newTodo = {};
-      this.newTodo.due = new Date();
+      this.newTodo.due = this.initializeDate();
       this.getTodos();
     }
   }
@@ -83,9 +85,36 @@ export class TodoComponent {
     }
   }
 
+  delayDue(todo) {
+    let modalInstance = this.$uibModal.open({
+      templateUrl: 'repeatSetting.pug',
+      controller: 'ModalInstanceCtrl',
+      controllerAs: 'modalCtrl',
+      size: 'sm',
+      resolve: {
+        targetTodo: function() {
+          return todo;
+        }
+      }
+    });
+    if(todo._id) {
+      let self = this;
+      modalInstance.result.then(function(delayedTodo) {
+        self.updateTodo(delayedTodo);
+      });
+    }
+  }
+
+  initializeDate() {
+    let dt = new Date();
+    dt.setMinutes(Math.ceil(dt.getMinutes() / 5) * 5);
+    dt.setSeconds(0);
+    return dt;
+  }
+
 }
 
-export default angular.module('meantodoApp.todo', [uiRouter, 'xeditable', angularFilter])
+export default angular.module('meantodoApp.todo', [uiRouter, 'xeditable', filter])
   .config(routes)
   .component('todo', {
     template: require('./todo.pug'),
@@ -94,5 +123,32 @@ export default angular.module('meantodoApp.todo', [uiRouter, 'xeditable', angula
   })
   .run(function(editableOptions) {
     editableOptions.theme = 'bs3';
+  })
+  .controller('ModalInstanceCtrl', function ($uibModalInstance, targetTodo) {
+    this.todo = targetTodo;
+
+    this.addMinutes = function(minutes) {
+      let dt = new Date(this.todo.due);
+      dt.setMinutes(dt.getMinutes() + minutes);
+      this.todo.due = dt;
+    };
+    this.addHours = function(hours) {
+      let dt = new Date(this.todo.due);
+      dt.setHours(dt.getHours() + hours);
+      this.todo.due = dt;
+    };
+    this.addDays = function(days) {
+      let dt = new Date(this.todo.due);
+      dt.setDate(dt.getDate() + days);
+      this.todo.due = dt;
+    };
+
+    this.ok = function () {
+      $uibModalInstance.close(this.todo);
+    };
+
+    this.cancel = function () {
+      $uibModalInstance.dismiss();
+    };
   })
   .name;
