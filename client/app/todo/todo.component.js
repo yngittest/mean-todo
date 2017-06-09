@@ -112,6 +112,21 @@ export class TodoComponent {
     return dt;
   }
 
+  delay(todo, type) {
+    let dt = new Date(todo.due);
+    if(type === 'min') {
+      dt.setMinutes(dt.getMinutes() + 10);
+    }else if(type === 'hour') {
+      dt.setHours(dt.getHours() + 1);
+    }else if(type === 'day') {
+      dt.setDate(dt.getDate() + 1);
+    }
+    todo.due = dt;
+    if(todo._id) {
+      this.updateTodo(todo);
+    }
+  }
+
 }
 
 export default angular.module('meantodoApp.todo', [uiRouter, 'xeditable', filter])
