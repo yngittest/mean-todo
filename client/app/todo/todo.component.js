@@ -31,7 +31,7 @@ export class TodoComponent {
   getTodos() {
     this.$http.get('/api/todos')
       .then(response => {
-        this.todos = response.data
+        this.todos = response.data;
         this.getGroups();
         this.socket.syncUpdates('todo', this.todos);
       });
@@ -67,7 +67,7 @@ export class TodoComponent {
 
   getGroups() {
     this.groups = [];
-    for (let todo of this.$filter('unique')(this.todos, 'group')) {
+    for(let todo of this.$filter('unique')(this.todos, 'group')) {
       this.groups.push(todo.group);
     }
   }
@@ -98,9 +98,9 @@ export class TodoComponent {
       }
     });
     if(todo._id) {
-      let self = this;
+      let that = this;
       modalInstance.result.then(function(delayedTodo) {
-        self.updateTodo(delayedTodo);
+        that.updateTodo(delayedTodo);
       });
     }
   }
@@ -116,9 +116,9 @@ export class TodoComponent {
     let dt = new Date(todo.due);
     if(type === 'min') {
       dt.setMinutes(dt.getMinutes() + 10);
-    }else if(type === 'hour') {
+    } else if(type === 'hour') {
       dt.setHours(dt.getHours() + 1);
-    }else if(type === 'day') {
+    } else if(type === 'day') {
       dt.setDate(dt.getDate() + 1);
     }
     todo.due = dt;
@@ -139,7 +139,7 @@ export default angular.module('meantodoApp.todo', [uiRouter, 'xeditable', filter
   .run(function(editableOptions) {
     editableOptions.theme = 'bs3';
   })
-  .controller('ModalInstanceCtrl', function ($uibModalInstance, targetTodo) {
+  .controller('ModalInstanceCtrl', function($uibModalInstance, targetTodo) {
     this.todo = targetTodo;
 
     this.addMinutes = function(minutes) {
@@ -158,11 +158,11 @@ export default angular.module('meantodoApp.todo', [uiRouter, 'xeditable', filter
       this.todo.due = dt;
     };
 
-    this.ok = function () {
+    this.ok = function() {
       $uibModalInstance.close(this.todo);
     };
 
-    this.cancel = function () {
+    this.cancel = function() {
       $uibModalInstance.dismiss();
     };
   })
