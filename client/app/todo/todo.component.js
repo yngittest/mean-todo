@@ -4,6 +4,7 @@ const angular = require('angular');
 const uiRouter = require('angular-ui-router');
 const xeditable = require('angular-xeditable');
 const filter = require('angular-filter');
+const moment = require('moment');
 
 import routes from './todo.routes';
 
@@ -19,9 +20,6 @@ export class TodoComponent {
     this.newTodo.due = this.initializeDate();
 
     this.datePickerOpen = {};
-
-    this.showDone = false;
-    this.doneFilter = false;
   }
 
   $onInit() {
@@ -32,7 +30,9 @@ export class TodoComponent {
     this.$http.get('/api/todos')
       .then(response => {
         this.todos = response.data;
-        this.getGroups();
+        this.uncompletedTodos = this.$filter('filter')(response.data, {done:false});
+        this.completedTodos = this.$filter('filter')(response.data, {done:true});
+        this.getGroups(this.uncompletedTodos);
         this.socket.syncUpdates('todo', this.todos);
       });
   }
@@ -54,6 +54,9 @@ export class TodoComponent {
   updateTodo(todo) {
     if(todo.done) {
       todo.doneDate = new Date();
+      if(todo.repeat === 1) {
+        this.$http.post('/api/todos', this.repeatTodo(todo));
+      }
     } else {
       todo.doneDate = '';
     }
@@ -65,9 +68,9 @@ export class TodoComponent {
     this.$http.delete(`/api/todos/${todo._id}`);
   }
 
-  getGroups() {
+  getGroups(todos) {
     this.groups = [];
-    for(let todo of this.$filter('unique')(this.todos, 'group')) {
+    for(let todo of this.$filter('unique')(todos, 'group')) {
       this.groups.push(todo.group);
     }
   }
@@ -77,15 +80,23 @@ export class TodoComponent {
     this.datePickerOpen[target] = !this.datePickerOpen[target];
   }
 
-  toggleDoneFilter() {
-    if(this.showDone) {
-      this.doneFilter = undefined;
-    } else {
-      this.doneFilter = false;
+  initializeDate() {
+    let dt = moment();
+    dt.minutes(Math.ceil(dt.minutes() / 5) * 5);
+    dt.seconds(0);
+    return dt.toDate();
+  }
+
+  delay(todo, duration, type) {
+    let dt = moment(todo.due);
+    dt.add(duration, type);
+    todo.due = dt.toDate();
+    if(todo._id) {
+      this.updateTodo(todo);
     }
   }
 
-  delayDue(todo) {
+  repeatSetting(todo) {
     let modalInstance = this.$uibModal.open({
       templateUrl: 'repeatSetting.pug',
       controller: 'ModalInstanceCtrl',
@@ -99,32 +110,35 @@ export class TodoComponent {
     });
     if(todo._id) {
       let that = this;
-      modalInstance.result.then(function(delayedTodo) {
-        that.updateTodo(delayedTodo);
+      modalInstance.result.then(function(resultTodo) {
+        that.updateTodo(resultTodo);
+      }, function() {
+        console.log('modal dismissed');
       });
     }
   }
 
-  initializeDate() {
-    let dt = new Date();
-    dt.setMinutes(Math.ceil(dt.getMinutes() / 5) * 5);
-    dt.setSeconds(0);
-    return dt;
-  }
+  repeatTodo(todo) {
+    let newDue;
+    if(todo.repeatType === 'DueDate') {
+      newDue = moment(todo.due);
+    } else {
+      newDue = moment(todo.doneDate);
+      newDue.minutes(Math.ceil(newDue.minutes() / 5) * 5);
+      newDue.seconds(0);
+    }
+    newDue.add(todo.repeatInterval, todo.repeatUnit);
 
-  delay(todo, type) {
-    let dt = new Date(todo.due);
-    if(type === 'min') {
-      dt.setMinutes(dt.getMinutes() + 10);
-    } else if(type === 'hour') {
-      dt.setHours(dt.getHours() + 1);
-    } else if(type === 'day') {
-      dt.setDate(dt.getDate() + 1);
-    }
-    todo.due = dt;
-    if(todo._id) {
-      this.updateTodo(todo);
-    }
+    return {
+      done: false,
+      name: todo.name,
+      group: todo.group,
+      due: newDue.toDate(),
+      repeat: todo.repeat,
+      repeatType: todo.repeatType,
+      repeatInterval: todo.repeatInterval,
+      repeatUnit: todo.repeatUnit
+    };
   }
 
 }
@@ -142,21 +156,11 @@ export default angular.module('meantodoApp.todo', [uiRouter, 'xeditable', filter
   .controller('ModalInstanceCtrl', function($uibModalInstance, targetTodo) {
     this.todo = targetTodo;
 
-    this.addMinutes = function(minutes) {
-      let dt = new Date(this.todo.due);
-      dt.setMinutes(dt.getMinutes() + minutes);
-      this.todo.due = dt;
-    };
-    this.addHours = function(hours) {
-      let dt = new Date(this.todo.due);
-      dt.setHours(dt.getHours() + hours);
-      this.todo.due = dt;
-    };
-    this.addDays = function(days) {
-      let dt = new Date(this.todo.due);
-      dt.setDate(dt.getDate() + days);
-      this.todo.due = dt;
-    };
+    const n = 30;
+    this.intervals = new Array(n);
+    for (var i = 0; i < n; i++) {
+      this.intervals[i] = i + 1;
+    }
 
     this.ok = function() {
       $uibModalInstance.close(this.todo);

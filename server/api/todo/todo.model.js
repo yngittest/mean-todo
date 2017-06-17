@@ -9,6 +9,10 @@ var TodoSchema = new mongoose.Schema({
   group: String,
   due: Date,
   doneDate: Date,
+  repeat: Number,
+  repeatType: String,
+  repeatInterval: Number,
+  repeatUnit: String,
   user: {
     type: mongoose.Schema.ObjectId,
     ref: 'User'

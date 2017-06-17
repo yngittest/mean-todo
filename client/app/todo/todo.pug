@@ -22,8 +22,8 @@
                   button#single-button.btn.btn-default(type="button" uib-dropdown-toggle ng-disabled="disabled")
                     span.caret
                   ul.dropdown-menu(uib-dropdown-menu role="menu" aria-labelledby="single-button")
-                    div(ng-repeat="group in todoCtrl.groups")
-                      li(role="menuitem" ng-click="todoCtrl.newTodo.group = group") {{ group }}
+                    li(role="menuitem" ng-repeat="group in todoCtrl.groups" ng-click="todoCtrl.newTodo.group = group")
+                      a {{ group }}
                 input.form-control(type="text" ng-model="todoCtrl.newTodo.group")
             td
               .input-group
@@ -31,22 +31,28 @@
                   button.btn.btn-default(id="group{{ $index }}" type="button" uib-dropdown-toggle ng-disabled="disabled")
                     span.caret
                   ul.dropdown-menu(uib-dropdown-menu role="menu" aria-labelledby="delay")
-                    li(role="menuitem" ng-click="todoCtrl.delay(todoCtrl.newTodo, 'min')") + 10 min
-                    li(role="menuitem" ng-click="todoCtrl.delay(todoCtrl.newTodo, 'hour')") + 1 hour
-                    li(role="menuitem" ng-click="todoCtrl.delay(todoCtrl.newTodo, 'day')") + 1 day
+                    li(role="menuitem" ng-click="todoCtrl.delay(todoCtrl.newTodo, 10, 'minutes')")
+                      a(href="#") + 10 min
+                    li(role="menuitem" ng-click="todoCtrl.delay(todoCtrl.newTodo, 1, 'hours')")
+                      a(href="#") + 1 hour
+                    li(role="menuitem" ng-click="todoCtrl.delay(todoCtrl.newTodo, 1, 'days')")
+                      a(href="#") + 1 day
                   button.btn.btn-default(href="#" editable-bsdate="todoCtrl.newTodo.due" e-is-open="todoCtrl.datePickerOpen['edit']" e-ng-click="todoCtrl.toggleDatePicker($event, 'edit')" e-datepicker-popup="yyyy/MM/dd") {{ (todoCtrl.newTodo.due | date : 'yyyy/MM/dd ') || 'empty' }}
                   button.btn.btn-default(href="#" editable-bstime="todoCtrl.newTodo.due" e-show-meridian="false"  e-minute-step="5") {{ (todoCtrl.newTodo.due | date : 'HH:mm') || 'empty' }}
-                  button.btn.btn-default(ng-click="todoCtrl.delayDue(todoCtrl.newTodo)")
+                  button.btn.btn-default(ng-click="todoCtrl.repeatSetting(todoCtrl.newTodo)")
                     i.glyphicon.glyphicon-repeat
             td
             td
               button.btn.btn-primary(ng-click="todoCtrl.addTodo()")
                 i.glyphicon.glyphicon-plus
-        tbody(ng-repeat="(key, value) in todoCtrl.todos | groupBy: 'group'")
-          tr
-            td(colspan="5" ng-click="isCollapsed = !isCollapsed")
-              b {{ key }}
-          tr(uib-collapse="isCollapsed" ng-repeat="todo in value | filter:{done:todoCtrl.doneFilter}")
+        tbody(ng-repeat="(key, value) in todoCtrl.uncompletedTodos | groupBy: 'group'")
+          tr.success(ng-click="isCollapsed = !isCollapsed")
+            td(colspan="5")
+              strong {{ key }} &nbsp;
+              span.badge {{ value.length }}
+              span.glyphicon.glyphicon-chevron-down.pull-right(ng-show="isCollapsed")
+              span.glyphicon.glyphicon-chevron-up.pull-right(ng-hide="isCollapsed")
+          tr(uib-collapse="isCollapsed" ng-repeat="todo in value")
             td
               .input-group
                 span.input-group-addon
@@ -58,8 +64,8 @@
                   button.btn.btn-default(id="group{{ $index }}" type="button" uib-dropdown-toggle ng-disabled="disabled")
                     span.caret
                   ul.dropdown-menu(uib-dropdown-menu role="menu" aria-labelledby="group{{ $index }}")
-                    div(ng-repeat="group in todoCtrl.groups")
-                      li(role="menuitem" ng-click="todo.group = group; todoCtrl.updateTodo(todo)") {{ group }}
+                    li(role="menuitem" ng-repeat="group in todoCtrl.groups" ng-click="todo.group = group; todoCtrl.updateTodo(todo)")
+                      a {{ group }}
                 a.form-control(href="#" editable-text="todo.group" onaftersave="todoCtrl.updateTodo(todo)") {{ todo.group || 'empty' }}
             td
               .input-group
@@ -67,12 +73,15 @@
                   button.btn.btn-default(id="group{{ $index }}" type="button" uib-dropdown-toggle ng-disabled="disabled")
                     span.caret
                   ul.dropdown-menu(uib-dropdown-menu role="menu" aria-labelledby="delay")
-                    li(role="menuitem" ng-click="todoCtrl.delay(todo, 'min')") + 10 min
-                    li(role="menuitem" ng-click="todoCtrl.delay(todo, 'hour')") + 1 hour
-                    li(role="menuitem" ng-click="todoCtrl.delay(todo, 'day')") + 1 day
+                    li(role="menuitem" ng-click="todoCtrl.delay(todo, 10, 'minutes')")
+                      a(href="#") + 10 min
+                    li(role="menuitem" ng-click="todoCtrl.delay(todo, 1, 'hours')")
+                      a(href="#") + 1 hour
+                    li(role="menuitem" ng-click="todoCtrl.delay(todo, 1, 'days')")
+                      a(href="#") + 1 day
                   button.btn.btn-default(href="#" editable-bsdate="todo.due" e-is-open="todoCtrl.datePickerOpen['edit']" e-ng-click="todoCtrl.toggleDatePicker($event, 'edit')" e-datepicker-popup="yyyy/MM/dd" onaftersave="todoCtrl.updateTodo(todo)") {{ (todo.due | date : 'yyyy/MM/dd ') || 'empty' }}
                   button.btn.btn-default(href="#" editable-bstime="todo.due" e-show-meridian="false" e-minute-step="5" onaftersave="todoCtrl.updateTodo(todo)") {{ (todo.due | date : 'HH:mm') || 'empty' }}
-                  button.btn.btn-default(ng-click="todoCtrl.delayDue(todo)")
+                  button.btn.btn-default(ng-click="todoCtrl.repeatSetting(todo)")
                     i.glyphicon.glyphicon-repeat
             td {{ todo.user.name }}
             td
@@ -90,7 +99,7 @@
             th.col-sm-1 owner
             th.col-sm-1
         tbody
-          tr(ng-repeat="todo in todoCtrl.todos | filter:{done:true}")
+          tr(ng-repeat="todo in todoCtrl.completedTodos")
             td
               input(type="checkbox" ng-model="todo.done" ng-change="todoCtrl.updateTodo(todo)")
             td {{ todo.name }}
@@ -104,11 +113,27 @@
 
 script(type="text/ng-template" id="repeatSetting.pug")
   .modal-body#modal-body
-    p {{ modalCtrl.todo.due | date : 'yyyy/MM/dd HH:mm'}}
-    .btn-group
-      button.btn.btn-default(ng-click="modalCtrl.addMinutes(10)") + 10 min
-      button.btn.btn-default(ng-click="modalCtrl.addHours(1)") + 1 hour
-      button.btn.btn-default(ng-click="modalCtrl.addDays(1)") + 1 day
+    .container
+      form.form-horizontal
+        .form-group
+          label.control-label.col-xs-2 repeat
+          button.btn.btn-default(ng-model="modalCtrl.todo.repeat" uib-btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0") on
+        .form-group(ng-show="modalCtrl.todo.repeat")
+          label.control-label.col-xs-2 type
+          .btn-group
+            button.btn.btn-default(ng-model="modalCtrl.todo.repeatType" uib-btn-radio="'DueDate'") Due Date
+            button.btn.btn-default(ng-model="modalCtrl.todo.repeatType" uib-btn-radio="'Complete'") Complete
+        .form-group(ng-show="modalCtrl.todo.repeat")
+          label.control-label.col-xs-2 interval
+          .row
+            .col-xs-2
+              select.form-control(ng-model="modalCtrl.todo.repeatInterval" ng-options="num as num for num in modalCtrl.intervals")
+            .col-xs-2
+              select.form-control(ng-model="modalCtrl.todo.repeatUnit")
+                option(value="days") days
+                option(value="weeks") weeks
+                option(value="months") months
+                option(value="years") years
   .modal-footer
       button.btn.btn-primary(ng-click="modalCtrl.ok()") OK
       button.btn.btn-warning(ng-click="modalCtrl.cancel()") Cancel
